@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//#define _DEBUG_
+
 #include "libWinLNK/src/winLnkFile.h"
 
 #include <popt.h>
@@ -99,7 +101,7 @@ int main(int argc, const char** argv) {
 		winLnkFile lnkFile(*it);
 		
 		if (lnkFile.load() < 0) {
-			cout << "Warning! Errors reading shortcut file.\n";
+			cerr << "Warning! Errors reading shortcut file (" << *it << ").\n";
 		}
 
 		//Get posix_time::ptime values from the Windows64 time values stored in the lnk file.

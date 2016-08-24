@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(winLNKViewer, 20160624)
+AC_INIT(winLNKViewer, 20160824)
 AC_CONFIG_SRCDIR([src/winLNKViewer.cpp])
 AM_INIT_AUTOMAKE
 
