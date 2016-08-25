@@ -38,7 +38,7 @@ int main(int argc, const char** argv) {
 	
 	struct poptOption optionsTable[] = {
 		{"delimited",	'd',	POPT_ARG_NONE,		NULL, 10,	"Display in comma-delimited format.", NULL},
-		{"mactime",		'm',	POPT_ARG_NONE,		NULL,	20,	"Display in the SleuthKit's mactime format.", NULL},
+		{"mactime",		'm',	POPT_ARG_NONE,		NULL,	20,	"Display in the SleuthKit's mactime format (TSK 3.0+).", NULL},
 		{"timezone", 	'z',	POPT_ARG_STRING,	NULL,	30,	"POSIX timezone string (e.g. 'EST-5EDT,M4.1.0,M10.1.0' or 'GMT-5') to be used when displaying data. Defaults to GMT.", "zone"},
 		{"version", 	0,		POPT_ARG_NONE,		NULL,	100,	"Display version.", NULL},
 		POPT_AUTOHELP
@@ -95,7 +95,7 @@ int main(int argc, const char** argv) {
 	
 	if (bDelimited) {
 		cout << "Shortcut,Path,Size,\"Created (" << tzcalc.getTimeZoneString() << ")\",\"Modified (" << tzcalc.getTimeZoneString() << ")\",\"Accessed (" << tzcalc.getTimeZoneString() << ")\",Local Path,Local Type,Local Label,Local Serial #,Network Share,Description,Relative Path,Working Directory,Command Line Args" << endl;
-	}
+	} //if (bDelimited) {
 	
 	for (vector<string>::iterator it = filenameVector.begin(); it != filenameVector.end(); it++) {
 		winLnkFile lnkFile(*it);
@@ -122,13 +122,29 @@ int main(int argc, const char** argv) {
 		string strAccessedTime = getDateString(ldtAccessedTime) + " " + getTimeString(ldtAccessedTime);
 
 		if (bMactime) {
-			//TODO The mactime output should actually display the target, not the lnk filename.  Maybe it should display both so you know where the times came from. I don't want to just display the lnk filename because then the interpretation could be that the lnk file was accessed on a certain date when in reality, the lnk file is saying that the target was accessed on that date.  The lnk file itself could have a completely different access date/time.
-			cout 	<< "LNK|" 
-					<< *it << "|||||||||" 
-					<< lnkFile.getFileLength() << "|" 
-					<< getUnix32FromWindows64(lnkFile.getAccessedTime()) << "|" 
-					<< getUnix32FromWindows64(lnkFile.getModifiedTime()) << "|" 
-					<< getUnix32FromWindows64(lnkFile.getCreatedTime()) << "||\n";
+			//TSK 3.0+: MD5|name|inode|mode_as_string|UID|GID|size|atime|mtime|ctime|crtime
+
+		string pathname;
+		if (lnkFile.isAvailableLocal()) {
+			pathname = lnkFile.getBasePath();
+		} else {
+			if (lnkFile.isAvailableNetwork()) {
+				pathname = lnkFile.getNetworkShare() + "\\" + lnkFile.getFinalPath();
+			}
+		}
+
+			cout 	<< "0|" 																		//MD5
+					<< *it << " -> " << pathname << "|"									//name
+					<< "LNK|"																	//inode
+					<< "|"																		//mode_as_string
+					<< "0|"																		//UID
+					<< "0|"																		//GID
+					<< lnkFile.getFileLength() << "|" 									//size
+					<< getUnix32FromWindows64(lnkFile.getAccessedTime()) << "|" //atime
+					<< getUnix32FromWindows64(lnkFile.getModifiedTime()) << "|" //mtime
+					<< getUnix32FromWindows64(lnkFile.getModifiedTime()) << "|"	//ctime
+					<< getUnix32FromWindows64(lnkFile.getCreatedTime()) 			//crtime
+					<< "\n";
 		} else {
 			if (bDelimited) {
 				cout 	<< "\"" << *it << "\","
