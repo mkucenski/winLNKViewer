@@ -135,8 +135,8 @@ int main(int argc, const char** argv) {
 
 			cout 	<< "0|" 																		//MD5
 					<< *it << " -> " << pathname << "|"									//name
-					<< "LNK|"																	//inode
-					<< "|"																		//mode_as_string
+					<< "0|"																		//inode
+					<< "lnk---------|"														//mode_as_string
 					<< "0|"																		//UID
 					<< "0|"																		//GID
 					<< lnkFile.getFileLength() << "|" 									//size
