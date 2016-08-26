@@ -122,17 +122,17 @@ int main(int argc, const char** argv) {
 		string strAccessedTime = getDateString(ldtAccessedTime) + " " + getTimeString(ldtAccessedTime);
 
 		if (bMactime) {
-			//TSK 3.0+: MD5|name|inode|mode_as_string|UID|GID|size|atime|mtime|ctime|crtime
 
-		string pathname;
-		if (lnkFile.isAvailableLocal()) {
-			pathname = lnkFile.getBasePath();
-		} else {
-			if (lnkFile.isAvailableNetwork()) {
-				pathname = lnkFile.getNetworkShare() + "\\" + lnkFile.getFinalPath();
+			string pathname;
+			if (lnkFile.isAvailableLocal()) {
+				pathname = lnkFile.getBasePath();
+			} else {
+				if (lnkFile.isAvailableNetwork()) {
+					pathname = lnkFile.getNetworkShare() + "\\" + lnkFile.getFinalPath();
+				}
 			}
-		}
 
+			//TSK 3.0+: MD5|name|inode|mode_as_string|UID|GID|size|atime|mtime|ctime|crtime
 			cout 	<< "0|" 																		//MD5
 					<< *it << " -> " << pathname << "|"									//name
 					<< "0|"																		//inode
